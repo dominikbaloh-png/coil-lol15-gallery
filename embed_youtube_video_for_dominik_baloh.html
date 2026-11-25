@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SDG 15 — Life on Land: Threat to Animals</title>
+
+  <!-- Load Tailwind CSS for responsive layout and utility styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Load Inter font family -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Configure custom earthy forest-green and warm nature theme tokens -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            forest: {
+              50: '#f3f7f4',
+              100: '#e2ede4',
+              200: '#c3d9c8',
+              300: '#97bea2',
+              400: '#659c76',
+              500: '#417d55',
+              600: '#2f6241',
+              700: '#264e35',
+              800: '#203f2c',
+              900: '#1b3425',
+              950: '#0e1d14',
+            },
+            earth: {
+              50: '#faf7f2',
+              100: '#f2ece1',
+              200: '#e3d6c2',
+              300: '#d0ba9b',
+              400: '#ba9a70',
+              500: '#a88254',
+              600: '#997047',
+              700: '#7f5b3c',
+              800: '#684c35',
+              900: '#56402e',
+            },
+            amberCard: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              200: '#fde68a',
+              300: '#fcd34d',
+            },
+            skyCard: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Subtle organic grain and smooth visual enhancements */
+    body {
+      background-color: #faf7f2;
+      color: #1b3425;
+      overflow-x: hidden;
+    }
+
+    .nature-hero-bg {
+      background:
+        radial-gradient(circle at 15% 20%, rgba(101, 156, 118, 0.22), transparent 45%),
+        radial-gradient(circle at 85% 15%, rgba(186, 154, 112, 0.2), transparent 45%),
+        linear-gradient(135deg, #1b3425 0%, #264e35 55%, #375a3a 100%);
+    }
+
+    .meter-bar {
+      transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.35s ease;
+    }
+
+    /* Ecosystem Guardian Game Styles */
+    .game-btn {
+      transition: all 0.18s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+    }
+    .game-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(86, 192, 43, 0.25), 0 4px 0 rgba(0, 0, 0, 0.35);
+    }
+    .game-btn:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+    }
+    .game-btn:disabled {
+      opacity: 0.48;
+      cursor: not-allowed;
+    }
+
+    .tool-card {
+      transition: all 0.2s ease;
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      background: rgba(27, 59, 43, 0.82);
+    }
+    .tool-card:hover:not(.disabled) {
+      border-color: rgba(86, 192, 43, 0.65);
+      background: rgba(38, 79, 58, 0.95);
+      transform: translateY(-2px);
+    }
+    .tool-card.active {
+      border-color: #56C02B;
+      background: linear-gradient(145deg, rgba(86, 192, 43, 0.28), rgba(63, 126, 68, 0.5));
+      box-shadow: 0 0 16px rgba(86, 192, 43, 0.4);
+      transform: translateY(-2px);
+    }
+    .tool-card.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #canvas-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 820px;
+      aspect-ratio: 16 / 10;
+      margin: 0 auto;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45), inset 0 0 0 2px rgba(86, 192, 43, 0.35);
+      background: #1a3326;
+    }
+
+    @media (max-width: 640px) {
+      #canvas-wrapper {
+        aspect-ratio: 4 / 3;
+      }
+    }
+
+    #gameCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      touch-action: none;
+    }
+
+    .modal-backdrop {
+      backdrop-filter: blur(6px);
+      background: rgba(10, 22, 16, 0.84);
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes pulseSlow {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+
+    .pulse-badge {
+      animation: pulseSlow 2.6s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-forest-600 selection:text-white">
+
+  <!-- =====================================================================
+       GITHUB PAGES DEPLOYMENT GUIDE (QUICK INSTRUCTIONS)
+       ---------------------------------------------------------------------
+       1. Save this single file as `index.html` inside your GitHub repository.
+       2. Optional media: create an `assets/` folder in your repository
+          (e.g. `assets/dominik.jpg` or `assets/lynx.jpg`) and set its
+          relative path in `SITE_CONFIG` below. No build tool is required.
+       3. In GitHub: go to Settings -> Pages -> set Source/Branch to `main`
+          (or your active branch) and Folder to `/ (root)`, then Save.
+       4. Customize text, authors, Q&As, species, quote, and game settings
+          inside `SITE_CONFIG` in the `<script>` section below.
+       ===================================================================== -->
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-30 bg-forest-950/90 backdrop-blur-md border-b border-forest-800 text-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <a href="#top" class="flex items-center gap-3 min-w-0">
+        <span id="header-badge" class="w-9 h-9 rounded-xl bg-forest-500 text-white font-extrabold text-sm flex items-center justify-center shrink-0">
+          15
+        </span>
+        <span id="header-brand" class="font-bold text-sm sm:text-base tracking-tight truncate">
+          SDG 15 — Life on Land
+        </span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-forest-100">
+        <a href="#threats" class="hover:text-white transition-colors">Threats &amp; Q&amp;A</a>
+        <a href="#species" class="hover:text-white transition-colors">Species</a>
+        <a href="#game" class="hover:text-white transition-colors">Game</a>
+        <a href="#quote" class="hover:text-white transition-colors">Reflection</a>
+        <a href="#authors" class="hover:text-white transition-colors">Authors</a>
+      </nav>
+
+      <a href="#game" class="px-3.5 py-2 rounded-xl bg-forest-500 hover:bg-forest-400 text-white text-xs sm:text-sm font-semibold transition-colors shrink-0">
+        Play Game
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="top" class="nature-hero-bg text-white py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 border-b border-forest-800">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <div class="lg:col-span-7 space-y-5">
+        <span id="hero-tag" class="inline-block text-xs font-bold uppercase tracking-widest px-3.5 py-1.5 rounded-full bg-white/10 text-forest-100 border border-white/15">
+          UN Sustainable Development Goal 15 • Threat to Animals
+        </span>
+        <h1 id="hero-title" class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">
+          SDG 15 — Life on Land: Threat to Animals
+        </h1>
+        <p id="hero-subtitle" class="text-base sm:text-lg text-forest-100/90 leading-relaxed max-w-2xl">
+          Exploring how human impact, environmental pollution, hunting, and climate change threaten life on land—and how protected habitats, prevention, and restoration shape our final consequence.
+        </p>
+
+        <div class="flex flex-wrap items-center gap-3 pt-1">
+          <a href="#game" class="px-5 py-3 rounded-2xl bg-forest-500 hover:bg-forest-400 text-white font-semibold text-sm transition-colors">
+            Launch Ecosystem Guardian
+          </a>
+          <a href="#threats" class="px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-semibold text-sm border border-white/15 transition-colors">
+            Explore Board Q&amp;A
+          </a>
+        </div>
+      </div>
+
+      <div class="lg:col-span-5">
+        <div class="rounded-3xl bg-white/10 backdrop-blur-md border border-white/15 p-6 sm:p-7 space-y-4">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-amberCard-200">Board Overview</span>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-forest-500/30 text-forest-100">Goal 15</span>
+          </div>
+          <h2 id="hero-callout-title" class="text-xl font-bold text-white">
+            Helping Animals &amp; Final Consequence
+          </h2>
+          <p id="hero-callout-text" class="text-sm text-forest-100/90 leading-relaxed">
+            Protecting threatened species, preventing waste and poaching, and restoring healthy ecosystems determine the final consequence for land and wildlife.
+          </p>
+          <div class="pt-3 border-t border-white/15 flex items-center justify-between text-xs text-forest-200">
+            <span>Created by</span>
+            <span id="hero-authors-short" class="font-semibold text-white">Dominik Baloh &amp; Matej Fabjan</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Container -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-14">
+
+    <!-- Section 1: Core Questions & Answers from the SDG 15 Board -->
+    <section id="threats" class="space-y-6">
+      <div class="max-w-2xl">
+        <span class="text-xs font-bold uppercase tracking-wider text-forest-700">Key Board Insights</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-forest-950 mt-1">
+          Threat to Animals: Questions &amp; Answers
+        </h2>
+        <p class="text-forest-800/80 mt-2 text-sm sm:text-base">
+          Core questions and answers from the SDG 15 board covering endangered species protection, human harm, climate impacts, and everyday prevention.
+        </p>
+      </div>
+
+      <div id="qa-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    </section>
+
+    <!-- Section 2: Threatened & Forest Species Spotlight -->
+    <section id="species" class="space-y-6">
+      <div class="max-w-2xl">
+        <span class="text-xs font-bold uppercase tracking-wider text-forest-700">Terrestrial Wildlife</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-forest-950 mt-1">
+          Threatened &amp; Forest Species Spotlight
+        </h2>
+        <p class="text-forest-800/80 mt-2 text-sm sm:text-base">
+          Species highlighted on the board that depend on healthy forests, clean wetlands, safe mountain habitats, and protection from hunting.
+        </p>
+      </div>
+
+      <div id="species-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+    </section>
+
+    <!-- Section 3: Interactive "Ecosystem Guardian" Mini-Game -->
+    <section id="game" class="rounded-3xl bg-[#12241b] text-[#f3f7f4] border border-[#56C02B]/35 shadow-xl p-5 sm:p-8 lg:p-10 space-y-6">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-white/10 pb-5">
+        <div>
+          <span class="inline-block text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#56C02B]/20 text-[#9ed988] border border-[#56C02B]/40">
+            Interactive Canvas Game • Final Consequence
+          </span>
+          <h2 id="game-title" class="text-2xl sm:text-3xl font-extrabold text-white mt-2">
+            Ecosystem Guardian: Life on Land (UN SDG 15)
+          </h2>
+          <p id="game-subtitle" class="text-sm sm:text-base text-emerald-100/85 mt-1 max-w-2xl">
+            Protect, restore, and sustain terrestrial habitats through 2030. Plant native forests, deploy eco-rangers, restore wetlands, and build wildlife corridors.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-3 shrink-0 flex-wrap">
+          <button id="btn-guide" type="button" class="game-btn bg-[#234735] hover:bg-[#2d5943] text-emerald-100 border border-emerald-400/30 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-semibold cursor-pointer" title="SDG 15 Field Guide">
+            📖 Guide
+          </button>
+          <button id="btn-mute" type="button" class="game-btn bg-[#234735] hover:bg-[#2d5943] text-emerald-100 border border-emerald-400/30 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm cursor-pointer" title="Toggle Sound Effects">
+            🔊
+          </button>
+          <button id="game-reset-btn" type="button" class="game-btn bg-[#56C02B] hover:bg-[#63d434] text-[#091a0f] font-extrabold rounded-xl px-4 py-2.5 text-xs sm:text-sm cursor-pointer">
+            Restart
+          </button>
+        </div>
+      </div>
+
+      <!-- Telemetry Bar -->
+      <div class="space-y-2.5">
+        <div class="flex flex-wrap items-center justify-between gap-2 bg-[#142a1f]/95 border border-[#56C02B]/30 rounded-2xl px-3 py-2.5 sm:px-4">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-[#56C02B] flex flex-col items-center justify-center text-white font-extrabold shrink-0">
+              <span class="text-xs leading-none">15</span>
+              <span class="text-[7px] uppercase tracking-wider leading-tight mt-0.5">LAND</span>
+            </div>
+            <div>
+              <div class="text-xs sm:text-sm font-bold text-white leading-tight">Life on Land Telemetry</div>
+              <div class="text-[11px] text-[#9ed988]">UN Agenda 2030 Restoration</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <div class="bg-[#0e1f17] border border-emerald-500/30 rounded-xl px-2.5 py-1.5 flex items-center gap-2" title="Eco-Energy regenerates from healthy forests and wetlands">
+              <span class="text-base">⚡</span>
+              <div>
+                <div class="text-[10px] uppercase tracking-wider text-emerald-300/80 font-semibold">Eco-Energy</div>
+                <div class="text-xs sm:text-sm font-bold text-white"><span id="stat-energy">65</span> <span class="text-[11px] text-[#56C02B]" id="stat-regen">(+3.0/s)</span></div>
+              </div>
+            </div>
+
+            <div class="bg-[#0e1f17] border border-amber-500/30 rounded-xl px-2.5 py-1.5 flex items-center gap-2" title="Biodiversity Score earned from native species and connected habitats">
+              <span class="text-base">🦊</span>
+              <div>
+                <div class="text-[10px] uppercase tracking-wider text-amber-300/80 font-semibold">Biodiversity</div>
+                <div class="text-xs sm:text-sm font-bold text-amber-300" id="stat-score">0</div>
+              </div>
+            </div>
+
+            <div class="bg-[#0e1f17] border border-sky-500/30 rounded-xl px-2.5 py-1.5 flex items-center gap-2" title="Restore and protect the ecosystem through 2030">
+              <span class="text-base">📅</span>
+              <div>
+                <div class="text-[10px] uppercase tracking-wider text-sky-300/80 font-semibold">Target Year</div>
+                <div class="text-xs sm:text-sm font-bold text-sky-300"><span id="stat-year">2025</span> <span class="text-slate-400 font-normal">/ 2030</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ecosystem Health vs Land Degradation Progress Bar -->
+        <div class="bg-[#142a1f]/95 border border-white/10 rounded-xl px-3 py-2 flex items-center gap-3">
+          <span class="text-xs font-semibold text-[#56C02B] whitespace-nowrap">🌿 Health: <span id="health-pct">52%</span></span>
+          <div class="flex-1 h-3 bg-[#2c1a14] rounded-full overflow-hidden border border-white/10">
+            <div id="health-bar" class="h-full bg-gradient-to-r from-[#3F7E44] to-[#56C02B] transition-all duration-300 rounded-full" style="width: 52%;"></div>
+          </div>
+          <span class="text-xs font-semibold text-orange-400 whitespace-nowrap">🏜️ Degradation: <span id="degrade-pct">24%</span></span>
+        </div>
+      </div>
+
+      <!-- Canvas Viewport with Overlays -->
+      <div id="canvas-wrapper">
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- Live SDG 15 Fact Ticker Banner -->
+        <div id="fact-banner" class="absolute top-2.5 left-1/2 -translate-x-1/2 bg-[#0d1f16]/90 backdrop-blur-md border border-[#56C02B]/40 text-emerald-100 text-[11px] sm:text-xs px-3.5 py-1.5 rounded-full shadow-lg pointer-events-none max-w-[92%] truncate text-center transition-opacity duration-500">
+          🌍 <strong class="text-[#56C02B]">SDG 15.2:</strong> Forests cover 31% of Earth's land surface and house over 80% of terrestrial species.
+        </div>
+
+        <!-- Start Overlay Screen -->
+        <div id="screen-start" class="modal-backdrop absolute inset-0 flex flex-col items-center justify-center p-4 sm:p-6 text-center z-20">
+          <div class="max-w-lg bg-[#142a1f] border-2 border-[#56C02B] rounded-3xl p-5 sm:p-7 shadow-2xl">
+            <div class="inline-flex items-center gap-2 bg-[#56C02B] text-[#091a0f] font-extrabold text-xs uppercase tracking-widest px-3.5 py-1 rounded-full mb-3 pulse-badge">
+              UN Sustainable Development Goal 15
+            </div>
+            <h3 class="text-xl sm:text-3xl font-extrabold text-white mb-2">Ecosystem Guardian</h3>
+            <p class="text-xs sm:text-sm text-emerald-100/90 leading-relaxed mb-4">
+              Protect, restore, and promote sustainable use of terrestrial ecosystems. Halt deforestation, combat desertification, and revive endangered wildlife before <strong class="text-[#56C02B]">2030</strong>!
+            </p>
+
+            <div class="grid grid-cols-2 gap-2 text-left text-[11px] sm:text-xs bg-[#0d1d15] p-3 rounded-2xl border border-white/10 mb-5">
+              <div class="flex items-start gap-2">
+                <span class="text-base">🌲</span>
+                <div><strong class="text-emerald-300">Reforest:</strong> Boosts Eco-Energy &amp; stops erosion.</div>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="text-base">🚒</span>
+                <div><strong class="text-amber-300">Rangers:</strong> Extinguish wildfires &amp; stop loggers.</div>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="text-base">💧</span>
+                <div><strong class="text-sky-300">Wetlands:</strong> Heals desert soil &amp; fireproofs.</div>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="text-base">🦌</span>
+                <div><strong class="text-lime-300">Corridors:</strong> Connects forests for rare wildlife.</div>
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2.5 justify-center">
+              <button id="btn-start-game" type="button" class="game-btn bg-[#56C02B] hover:bg-[#63d434] text-[#091a0f] font-extrabold text-sm sm:text-base px-6 py-3 rounded-2xl cursor-pointer">
+                🌱 Start Restoration Mission
+              </button>
+              <button id="btn-open-guide-start" type="button" class="game-btn bg-[#234735] hover:bg-[#2d5943] text-white font-semibold text-xs sm:text-sm px-4 py-3 rounded-2xl border border-white/15 cursor-pointer">
+                📖 SDG 15 Targets
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Game Over / Victory Modal -->
+        <div id="screen-end" class="hidden modal-backdrop absolute inset-0 flex flex-col items-center justify-center p-4 sm:p-6 text-center z-30">
+          <div class="max-w-md bg-[#142a1f] border-2 border-[#56C02B] rounded-3xl p-6 sm:p-7 shadow-2xl">
+            <div id="end-icon" class="text-4xl sm:text-5xl mb-2">🏆</div>
+            <h3 id="end-title" class="text-xl sm:text-3xl font-extrabold text-white mb-2">2030 Target Achieved!</h3>
+            <p id="end-subtitle" class="text-xs sm:text-sm text-emerald-100/90 mb-5">
+              You successfully restored terrestrial biodiversity and halted land degradation.
+            </p>
+
+            <div class="grid grid-cols-3 gap-2 bg-[#0d1d15] p-3 rounded-2xl border border-white/10 mb-5">
+              <div>
+                <div class="text-[10px] uppercase text-slate-400">Biodiversity</div>
+                <div id="end-score" class="text-base sm:text-xl font-bold text-amber-300">0</div>
+              </div>
+              <div>
+                <div class="text-[10px] uppercase text-slate-400">Forest Health</div>
+                <div id="end-health" class="text-base sm:text-xl font-bold text-[#56C02B]">0%</div>
+              </div>
+              <div>
+                <div class="text-[10px] uppercase text-slate-400">Wildlife Saved</div>
+                <div id="end-wildlife" class="text-base sm:text-xl font-bold text-sky-300">0</div>
+              </div>
+            </div>
+
+            <button id="btn-restart" type="button" class="game-btn w-full bg-[#56C02B] hover:bg-[#63d434] text-[#091a0f] font-extrabold text-sm sm:text-base py-3 rounded-2xl cursor-pointer">
+              🔄 Play Again
+            </button>
+          </div>
+        </div>
+
+        <!-- SDG 15 Field Guide Modal -->
+        <div id="screen-guide" class="hidden modal-backdrop absolute inset-0 flex flex-col items-center justify-center p-4 z-40">
+          <div class="max-w-xl w-full bg-[#142a1f] border-2 border-[#56C02B] rounded-3xl p-5 sm:p-6 shadow-2xl max-h-[90%] overflow-y-auto text-left">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-3">
+              <div class="flex items-center gap-2.5">
+                <span class="bg-[#56C02B] text-[#091a0f] font-extrabold px-2.5 py-1 rounded-lg text-xs sm:text-sm">SDG 15</span>
+                <h3 class="text-base sm:text-xl font-bold text-white">UN Life on Land Field Guide</h3>
+              </div>
+              <button id="btn-close-guide" type="button" class="text-slate-300 hover:text-white text-xl font-bold px-2 cursor-pointer">✕</button>
+            </div>
+
+            <div class="space-y-3 text-xs sm:text-sm text-emerald-100/90">
+              <div class="bg-[#0d1d15] p-3 rounded-xl border border-emerald-500/20">
+                <strong class="text-[#56C02B] block mb-0.5">Target 15.1 &amp; 15.2 — Sustainable Forests &amp; Ecosystems</strong>
+                Conserve and restore terrestrial and inland freshwater ecosystems. Planting <strong>Native Forest (🌲)</strong> increases passive Eco-Energy generation and shelters wildlife.
+              </div>
+              <div class="bg-[#0d1d15] p-3 rounded-xl border border-sky-500/20">
+                <strong class="text-sky-300 block mb-0.5">Target 15.3 — Combat Desertification</strong>
+                Restore degraded land and soil affected by drought and erosion. Use <strong>Wetland Oasis (💧)</strong> to convert barren desert back into fertile soil and protect neighboring tiles from wildfires.
+              </div>
+              <div class="bg-[#0d1d15] p-3 rounded-xl border border-amber-500/20">
+                <strong class="text-amber-300 block mb-0.5">Target 15.5 &amp; 15.7 — Halt Biodiversity Loss &amp; Poaching</strong>
+                Protect threatened species and stop illegal logging or invasive weeds. Deploy <strong>Eco-Ranger (🚒)</strong> to clear threats, and build <strong>Bio-Corridor (🦌)</strong> between forests to attract rare wildlife!
+              </div>
+            </div>
+
+            <button id="btn-close-guide-bottom" type="button" class="game-btn mt-4 w-full bg-[#56C02B] text-[#091a0f] font-extrabold py-2.5 rounded-xl cursor-pointer">
+              Back to Ecosystem
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Action Toolbar -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3" id="toolbar">
+        <button type="button" class="tool-card active rounded-2xl p-2.5 sm:p-3 text-left flex items-center gap-2.5 cursor-pointer" data-tool="plant" data-cost="15">
+          <div class="w-10 h-10 rounded-xl bg-emerald-900/90 border border-[#56C02B]/50 flex items-center justify-center text-xl shrink-0">🌲</div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-xs sm:text-sm text-white truncate">Native Forest</span>
+              <span class="text-[10px] bg-black/40 px-1.5 py-0.5 rounded text-slate-300 hidden sm:inline">[1]</span>
+            </div>
+            <div class="text-[11px] text-[#56C02B] font-semibold">⚡ <span class="tool-cost-val">15</span> Energy</div>
+            <div class="text-[10px] text-emerald-200/70 truncate">Restores soil &amp; +regen</div>
+          </div>
+        </button>
+
+        <button type="button" class="tool-card rounded-2xl p-2.5 sm:p-3 text-left flex items-center gap-2.5 cursor-pointer" data-tool="ranger" data-cost="20">
+          <div class="w-10 h-10 rounded-xl bg-amber-900/80 border border-amber-400/50 flex items-center justify-center text-xl shrink-0">🚒</div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-xs sm:text-sm text-white truncate">Eco-Ranger</span>
+              <span class="text-[10px] bg-black/40 px-1.5 py-0.5 rounded text-slate-300 hidden sm:inline">[2]</span>
+            </div>
+            <div class="text-[11px] text-amber-300 font-semibold">⚡ <span class="tool-cost-val">20</span> Energy</div>
+            <div class="text-[10px] text-emerald-200/70 truncate">Stops fire, loggers &amp; pests</div>
+          </div>
+        </button>
+
+        <button type="button" class="tool-card rounded-2xl p-2.5 sm:p-3 text-left flex items-center gap-2.5 cursor-pointer" data-tool="water" data-cost="25">
+          <div class="w-10 h-10 rounded-xl bg-sky-900/80 border border-sky-400/50 flex items-center justify-center text-xl shrink-0">💧</div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-xs sm:text-sm text-white truncate">Wetland Oasis</span>
+              <span class="text-[10px] bg-black/40 px-1.5 py-0.5 rounded text-slate-300 hidden sm:inline">[3]</span>
+            </div>
+            <div class="text-[11px] text-sky-300 font-semibold">⚡ <span class="tool-cost-val">25</span> Energy</div>
+            <div class="text-[10px] text-emerald-200/70 truncate">Cures desert &amp; fireproofs</div>
+          </div>
+        </button>
+
+        <button type="button" class="tool-card rounded-2xl p-2.5 sm:p-3 text-left flex items-center gap-2.5 cursor-pointer" data-tool="corridor" data-cost="30">
+          <div class="w-10 h-10 rounded-xl bg-lime-900/80 border border-lime-400/50 flex items-center justify-center text-xl shrink-0">🦌</div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-xs sm:text-sm text-white truncate">Bio-Corridor</span>
+              <span class="text-[10px] bg-black/40 px-1.5 py-0.5 rounded text-slate-300 hidden sm:inline">[4]</span>
+            </div>
+            <div class="text-[11px] text-lime-300 font-semibold">⚡ <span class="tool-cost-val">30</span> Energy</div>
+            <div class="text-[10px] text-emerald-200/70 truncate">Spawns rare fauna (+pts)</div>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <!-- Section 4: Final Consequence Quote -->
+    <section id="quote" class="rounded-3xl bg-forest-900 text-white p-8 sm:p-12 relative overflow-hidden">
+      <div class="max-w-3xl mx-auto text-center space-y-4">
+        <span class="inline-block text-xs font-bold uppercase tracking-widest text-amberCard-300">
+          Final Consequence • Reflection
+        </span>
+        <blockquote id="quote-text" class="text-xl sm:text-2xl lg:text-3xl font-semibold leading-relaxed text-white">
+          “A nation that destroys its soils destroys itself. Forests are the lungs of our land, purifying the air and giving fresh strength to our people.”
+        </blockquote>
+        <p id="quote-author" class="text-sm sm:text-base font-medium text-forest-200 pt-1">
+          — Franklin D. Roosevelt
+        </p>
+      </div>
+    </section>
+
+    <!-- Section 5: Two Authors Section -->
+    <section id="authors" class="space-y-6">
+      <div class="max-w-2xl">
+        <span class="text-xs font-bold uppercase tracking-wider text-forest-700">Project Creators</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-forest-950 mt-1">
+          Authors
+        </h2>
+        <p class="text-forest-800/80 mt-2 text-sm sm:text-base">
+          Created by two authors—update names, roles, bios, or optional relative image paths anytime in <code class="px-1.5 py-0.5 rounded bg-earth-200/70 text-forest-900 text-xs">SITE_CONFIG.authors</code>.
+        </p>
+      </div>
+
+      <!-- Dynamically rendered from SITE_CONFIG.authors -->
+      <div id="authors-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-forest-950 text-forest-200 py-8 px-4 sm:px-6 lg:px-8 border-t border-forest-800">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm">
+      <p id="footer-left">
+        SDG 15 — Life on Land: Threat to Animals • Editable GitHub Pages Template
+      </p>
+      <p id="footer-right" class="text-forest-300">
+        Authors: Dominik Baloh &amp; Matej Fabjan
+      </p>
+    </div>
+  </footer>
+
+  <!-- =====================================================================
+       CENTRAL EDITABLE CONFIGURATION & APPLICATION SCRIPT
+       Edit `SITE_CONFIG` below to easily customize all text, authors,
+       species cards, quote, and game settings without touching markup.
+       ===================================================================== -->
+  <script>
+    const SITE_CONFIG = {
+      brand: {
+        badge: "15",
+        headerTitle: "SDG 15 — Life on Land",
+        heroTag: "UN Sustainable Development Goal 15 • Threat to Animals",
+        heroTitle: "SDG 15 — Life on Land: Threat to Animals",
+        heroSubtitle:
+          "Exploring how human impact, environmental pollution, hunting, and climate change threaten life on land—and how protected habitats, prevention, and restoration shape our final consequence.",
+        calloutTitle: "Helping Animals & Final Consequence",
+        calloutText:
+          "Protecting threatened species, preventing waste and poaching, and restoring healthy ecosystems determine the final consequence for land and wildlife.",
+        footerLeft: "SDG 15 — Life on Land: Threat to Animals • GitHub Pages Ready Template",
+      },
+
+      // Two credited authors (set `photo` to a relative path like "assets/dominik.jpg" if desired)
+      authors: [
+        {
+          name: "Dominik Baloh",
+          role: "Co-Author • Wildlife Protection & Conservation",
+          bio: "Contributed ideas on helping endangered animals, preventing threats to wildlife, and building awareness around UN Sustainable Development Goal 15.",
+          initials: "DB",
+          photo: "",
+          youtubeUrl: "https://www.youtube.com/watch?v=LETcktWU4SM",
+        },
+        {
+          name: "Matej Fabjan",
+          role: "Co-Author • SDG 15 Board & Ecosystem Content",
+          bio: "Collaborated on the Life on Land board structure, endangered species examples, climate impact insights, and prevention actions.",
+          initials: "MF",
+          photo: "",
+          youtubeUrl: "https://youtu.be/v7EHzx4ovik",
+        },
+      ],
+
+      // Four Q&A cards derived directly from the SDG 15 board
+      qaCards: [
+        {
+          theme: "amber",
+          badge: "Question 01 • Protection",
+          question: "How can we help endangered animals?",
+          answer:
+            "We keep them in a protected environment, where we can prevent their extinction.",
+          points: [
+            "Safeguarded habitats help shield vulnerable species",
+            "Supports long-term survival and recovery",
+          ],
+        },
+        {
+          theme: "sky",
+          badge: "Question 02 • Human Impact",
+          question: "How does a human harm animals?",
+          answer:
+            "By polluting the environment and hunting endangered animals.",
+          points: [
+            "Pollution degrades habitats, soil, and water",
+            "Hunting endangered animals directly threatens populations",
+          ],
+        },
+        {
+          theme: "amber",
+          badge: "Question 03 • Climate Change",
+          question: "How do animals feel changes in the climate?",
+          answer:
+            "Animals feel changes in the climate through loss of food sources, changes in their habitats, disruption of biological rhythms, and direct thermal stress.",
+          points: [
+            "Loss of food sources & shifting habitats",
+            "Disruption of biological rhythms & direct thermal stress",
+          ],
+        },
+        {
+          theme: "sky",
+          badge: "Question 04 • Prevention",
+          question: "How do we prevent this?",
+          answer:
+            "By recycling our waste, not throwing trash into nature, and not hunting endangered animals.",
+          points: [
+            "Recycle waste and keep trash out of nature",
+            "Do not hunt endangered animals",
+          ],
+        },
+      ],
+
+      // Species spotlight inspired by the board (set `photo` to relative path if desired)
+      species: [
+        {
+          name: "Lynx",
+          icon: "🐾",
+          status: "Threatened Forest Predator",
+          habitat: "Dense forests & rocky terrain",
+          note: "Relies on continuous woodland cover and healthy prey populations.",
+          photo: "",
+        },
+        {
+          name: "Chamois",
+          icon: "🏔️",
+          status: "Mountain Ungulate",
+          habitat: "Steep mountain slopes & crags",
+          note: "Sensitive to habitat changes, disturbance, and rising temperatures.",
+          photo: "",
+        },
+        {
+          name: "Wolf",
+          icon: "🐺",
+          status: "Keystone Carnivore",
+          habitat: "Forests & connected wild areas",
+          note: "Helps balance ecosystems and keep wildlife food webs healthy.",
+          photo: "",
+        },
+        {
+          name: "Alpine Ibex",
+          icon: "🐐",
+          status: "Mountain Species",
+          habitat: "High rocky cliffs & alpine ledges",
+          note: "Needs safe, undisturbed mountain terrain and protection from hunting.",
+          photo: "",
+        },
+        {
+          name: "Black Stork",
+          icon: "🕊️",
+          status: "Elusive Woodland Bird",
+          habitat: "Quiet forests & clean wetlands",
+          note: "Depends on clean water, healthy trees, and peaceful nesting areas.",
+          photo: "",
+        },
+        {
+          name: "European Beaver",
+          icon: "🪵",
+          status: "Ecosystem Engineer",
+          habitat: "Rivers, streams & wooded banks",
+          note: "Creates wetlands that boost biodiversity—vulnerable to water pollution.",
+          photo: "",
+        },
+        {
+          name: "White Stork",
+          icon: "🦢",
+          status: "Migratory Land & Wetland Bird",
+          habitat: "Meadows, marshes & agricultural margins",
+          note: "Affected by habitat shifts, chemical pollution, and landscape changes.",
+          photo: "",
+        },
+        {
+          name: "Forest Deer",
+          icon: "🦌",
+          status: "Woodland Herbivore",
+          habitat: "Forests, glades & natural corridors",
+          note: "Requires connected habitats, clean forage, and shelter from thermal stress.",
+          photo: "",
+        },
+      ],
+
+      // Quote from the board
+      quote: {
+        text: "A nation that destroys its soil destroys itself. Forests are the lungs of our land, purifying the air and giving fresh strength to our people.",
+        author: "Franklin D. Roosevelt",
+      },
+
+      // Editable settings for the embedded Ecosystem Guardian game
+      game: {
+        title: "Ecosystem Guardian: Life on Land (UN SDG 15)",
+        subtitle:
+          "Protect, restore, and sustain terrestrial habitats through 2030. Plant native forests, deploy eco-rangers, restore wetlands, and build wildlife corridors.",
+        startYear: 2025,
+        targetYear: 2030,
+        secondsPerYear: 11,
+        initialEnergy: 65,
+        maxEnergy: 120,
+        toolCosts: {
+          plant: 15,
+          ranger: 20,
+          water: 25,
+          corridor: 30,
+        },
+        facts: [
+          "SDG 15.1: By 2030, ensure the conservation and sustainable use of terrestrial and inland freshwater ecosystems.",
+          "SDG 15.2: Forests cover 31% of Earth's land surface and house over 80% of terrestrial species.",
+          "SDG 15.3: Every year, millions of hectares of fertile land are threatened by drought, erosion, and desertification.",
+          "SDG 15.5: Urgent action is needed to reduce habitat degradation, pollution, and biodiversity loss.",
+          "SDG 15.7: Wildlife corridors reconnect fragmented habitats, helping species survive and move safely.",
+          "SDG 15.9: Healthy wetlands support biodiversity, filter water, and buffer against wildfires.",
+        ],
+      },
+    };
+
+    // Render static/config-driven text and cards
+    function setTextById(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    function renderStaticContent() {
+      try {
+        document.title = SITE_CONFIG.brand.heroTitle;
+        setTextById("header-badge", SITE_CONFIG.brand.badge);
+        setTextById("header-brand", SITE_CONFIG.brand.headerTitle);
+        setTextById("hero-tag", SITE_CONFIG.brand.heroTag);
+        setTextById("hero-title", SITE_CONFIG.brand.heroTitle);
+        setTextById("hero-subtitle", SITE_CONFIG.brand.heroSubtitle);
+        setTextById("hero-callout-title", SITE_CONFIG.brand.calloutTitle);
+        setTextById("hero-callout-text", SITE_CONFIG.brand.calloutText);
+
+        const authorNames = SITE_CONFIG.authors.map((a) => a.name).join(" & ");
+        setTextById("hero-authors-short", authorNames);
+        setTextById("footer-left", SITE_CONFIG.brand.footerLeft);
+        setTextById("footer-right", `Authors: ${authorNames}`);
+
+        // Q&A Cards
+        const qaGrid = document.getElementById("qa-grid");
+        if (qaGrid) {
+          qaGrid.innerHTML = SITE_CONFIG.qaCards
+            .map((card) => {
+              const isAmber = card.theme === "amber";
+              const cardBg = isAmber
+                ? "bg-amberCard-50 border-amberCard-200"
+                : "bg-skyCard-50 border-skyCard-200";
+              const badgeStyle = isAmber
+                ? "bg-amberCard-200/80 text-amber-950"
+                : "bg-skyCard-200/80 text-blue-950";
+              const bulletColor = isAmber ? "text-amber-700" : "text-blue-700";
+
+              const bulletsHtml = (card.points || [])
+                .map(
+                  (pt) =>
+                    `<li class="flex items-start gap-2 text-xs sm:text-sm text-forest-900/85">
+                      <span class="${bulletColor} font-bold mt-0.5">•</span>
+                      <span>${pt}</span>
+                    </li>`
+                )
+                .join("");
+
+              return `
+                <article class="rounded-2xl border ${cardBg} p-6 flex flex-col justify-between gap-4 transition-transform duration-200 hover:-translate-y-0.5">
+                  <div class="space-y-3">
+                    <span class="inline-block text-xs font-semibold px-3 py-1 rounded-full ${badgeStyle}">
+                      ${card.badge}
+                    </span>
+                    <h3 class="text-lg sm:text-xl font-bold text-forest-950 leading-snug">
+                      ${card.question}
+                    </h3>
+                    <p class="text-sm sm:text-base text-forest-900 leading-relaxed font-medium">
+                      ${card.answer}
+                    </p>
+                  </div>
+                  <ul class="pt-3 border-t border-black/5 space-y-1.5">
+                    ${bulletsHtml}
+                  </ul>
+                </article>
+              `;
+            })
+            .join("");
+        }
+
+        // Species Cards
+        const speciesGrid = document.getElementById("species-grid");
+        if (speciesGrid) {
+          speciesGrid.innerHTML = SITE_CONFIG.species
+            .map((item) => {
+              const mediaHtml = item.photo
+                ? `<img src="${item.photo}" alt="${item.name}" class="w-14 h-14 rounded-2xl object-cover border border-earth-200 shrink-0" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                   <div class="w-14 h-14 rounded-2xl bg-forest-100 text-2xl items-center justify-center shrink-0 hidden">${item.icon || "🌿"}</div>`
+                : `<div class="w-14 h-14 rounded-2xl bg-forest-100 text-2xl flex items-center justify-center shrink-0">${item.icon || "🌿"}</div>`;
+
+              return `
+                <article class="rounded-2xl bg-white border border-earth-200 p-5 flex flex-col justify-between gap-3">
+                  <div class="flex items-start gap-4">
+                    ${mediaHtml}
+                    <div class="min-w-0">
+                      <h3 class="font-bold text-lg text-forest-950 truncate">${item.name}</h3>
+                      <p class="text-xs font-semibold text-forest-700">${item.status}</p>
+                      <p class="text-xs text-earth-800 mt-0.5">Habitat: ${item.habitat}</p>
+                    </div>
+                  </div>
+                  <p class="text-sm text-forest-900/85 leading-relaxed">
+                    ${item.note}
+                  </p>
+                </article>
+              `;
+            })
+            .join("");
+        }
+
+        // Quote
+        setTextById("quote-text", `“${SITE_CONFIG.quote.text}”`);
+        setTextById("quote-author", `— ${SITE_CONFIG.quote.author}`);
+
+        // Helper to extract YouTube video ID from standard, share, or embed URLs
+        function getYouTubeId(url) {
+          if (!url || typeof url !== "string") return "";
+          const match = url.match(
+            /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/
+          );
+          return match ? match[1] : "";
+        }
+
+        // Authors
+        const authorsGrid = document.getElementById("authors-grid");
+        if (authorsGrid) {
+          authorsGrid.innerHTML = SITE_CONFIG.authors
+            .map((author) => {
+              const avatarHtml = author.photo
+                ? `<img src="${author.photo}" alt="${author.name}" class="w-16 h-16 rounded-2xl object-cover border border-earth-200 shrink-0" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                   <div class="w-16 h-16 rounded-2xl bg-forest-700 text-white font-bold text-lg items-center justify-center shrink-0 hidden">${author.initials || "A"}</div>`
+                : `<div class="w-16 h-16 rounded-2xl bg-forest-700 text-white font-bold text-lg flex items-center justify-center shrink-0">${author.initials || "A"}</div>`;
+
+              const ytId = getYouTubeId(author.youtubeUrl);
+              const videoHtml = ytId
+                ? `<div class="mt-3 pt-3 border-t border-earth-200/80 space-y-2">
+                     <div class="text-xs font-semibold text-forest-800">Featured Video</div>
+                     <div class="w-full aspect-video rounded-xl overflow-hidden bg-forest-950 border border-earth-200">
+                       <iframe
+                         src="https://www.youtube.com/embed/${ytId}"
+                         title="${author.name} — Featured Video"
+                         class="w-full h-full"
+                         loading="lazy"
+                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                         allowfullscreen
+                       ></iframe>
+                     </div>
+                   </div>`
+                : "";
+
+              return `
+                <article class="rounded-2xl bg-white border border-earth-200 p-6 flex flex-col justify-between gap-3">
+                  <div class="flex items-start gap-4">
+                    ${avatarHtml}
+                    <div class="space-y-1.5 min-w-0">
+                      <h3 class="text-lg font-bold text-forest-950">${author.name}</h3>
+                      <p class="text-xs font-semibold uppercase tracking-wide text-forest-700">${author.role}</p>
+                      <p class="text-sm text-forest-900/85 leading-relaxed pt-1">${author.bio}</p>
+                    </div>
+                  </div>
+                  ${videoHtml}
+                </article>
+              `;
+            })
+            .join("");
+        }
+
+        // Game Heading & Tool Costs from SITE_CONFIG
+        setTextById("game-title", SITE_CONFIG.game.title);
+        setTextById("game-subtitle", SITE_CONFIG.game.subtitle);
+        document.querySelectorAll(".tool-card").forEach((card) => {
+          const toolKey = card.dataset.tool;
+          const cost = SITE_CONFIG.game.toolCosts[toolKey];
+          if (typeof cost === "number") {
+            card.dataset.cost = String(cost);
+            const costEl = card.querySelector(".tool-cost-val");
+            if (costEl) costEl.textContent = String(cost);
+          }
+        });
+      } catch (err) {
+        console.error("Error rendering static content:", err);
+      }
+    }
+
+    /**
+     * ECOSYSTEM GUARDIAN: LIFE ON LAND (UN SDG 15)
+     * Self-contained interactive HTML5 Canvas strategy & restoration game.
+     */
+    class SoundFX {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+        if (this.ctx && this.ctx.state === "suspended") {
+          this.ctx.resume();
+        }
+      }
+
+      playTone(freq, type, duration, vol = 0.12, slideTo = null) {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          if (slideTo) {
+            osc.frequency.exponentialRampToValueAtTime(slideTo, this.ctx.currentTime + duration);
+          }
+          gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {
+          // Ignore audio restriction errors
+        }
+      }
+
+      playPlant() {
+        this.playTone(320, "sine", 0.18, 0.14, 540);
+        setTimeout(() => this.playTone(480, "triangle", 0.22, 0.1, 680), 60);
+      }
+
+      playWater() {
+        this.playTone(420, "sine", 0.25, 0.14, 260);
+        setTimeout(() => this.playTone(580, "sine", 0.2, 0.1, 740), 90);
+      }
+
+      playRanger() {
+        this.playTone(220, "triangle", 0.15, 0.16, 440);
+        setTimeout(() => this.playTone(330, "triangle", 0.2, 0.14, 550), 80);
+      }
+
+      playWildlife() {
+        this.playTone(523.25, "sine", 0.14, 0.12);
+        setTimeout(() => this.playTone(659.25, "sine", 0.14, 0.12), 90);
+        setTimeout(() => this.playTone(783.99, "sine", 0.25, 0.14), 180);
+      }
+
+      playAlert() {
+        this.playTone(170, "sawtooth", 0.22, 0.08, 120);
+      }
+
+      playError() {
+        this.playTone(140, "square", 0.12, 0.07, 110);
+      }
+    }
+
+    const sfx = new SoundFX();
+
+    const TILE_TYPES = {
+      GRASS: "grass",
+      FOREST: "forest",
+      WETLAND: "wetland",
+      CORRIDOR: "corridor",
+      DESERT: "desert",
+      FIRE: "fire",
+      LOGGERS: "loggers",
+      INVASIVE: "invasive",
+    };
+
+    const WILDLIFE_SPECIES = [
+      { emoji: "🦊", name: "Red Fox", points: 25 },
+      { emoji: "🦌", name: "Forest Deer", points: 35 },
+      { emoji: "🦉", name: "Barn Owl", points: 30 },
+      { emoji: "🐝", name: "Pollinator Bee", points: 20 },
+      { emoji: "🦔", name: "Hedgehog", points: 20 },
+      { emoji: "🐺", name: "Gray Wolf", points: 45 },
+    ];
+
+    const gameCanvas = document.getElementById("gameCanvas");
+    const gameCtx = gameCanvas.getContext("2d");
+
+    const GRID_COLS = 8;
+    const GRID_ROWS = 5;
+
+    const ecoState = {
+      running: false,
+      paused: false,
+      gameOver: false,
+      energy: SITE_CONFIG.game.initialEnergy,
+      maxEnergy: SITE_CONFIG.game.maxEnergy,
+      regenRate: 3.0,
+      score: 0,
+      year: SITE_CONFIG.game.startYear,
+      yearProgress: 0,
+      selectedTool: "plant",
+      hoverTile: null,
+      grid: [],
+      wildlife: [],
+      particles: [],
+      floatingTexts: [],
+      threatTimer: 0,
+      factIndex: 0,
+      factTimer: 0,
+      wildlifeSavedCount: 0,
+      lastTime: 0,
+    };
+
+    function getToolCost(toolKey) {
+      return SITE_CONFIG.game.toolCosts[toolKey] ?? 20;
+    }
+
+    function spawnWildlifeOnTile(tile, awardBonus = true) {
+      const species = WILDLIFE_SPECIES[Math.floor(Math.random() * WILDLIFE_SPECIES.length)];
+      ecoState.wildlife.push({
+        emoji: species.emoji,
+        name: species.name,
+        c: tile.c + 0.5,
+        r: tile.r + 0.5,
+        targetC: tile.c + 0.5,
+        targetR: tile.r + 0.5,
+        hopPhase: Math.random() * Math.PI * 2,
+        moveTimer: 1 + Math.random() * 2,
+      });
+      ecoState.wildlifeSavedCount++;
+
+      if (awardBonus) {
+        ecoState.score += species.points;
+        sfx.playWildlife();
+        addFloatingText(tile.c + 0.5, tile.r + 0.3, `+${species.points} ${species.emoji} ${species.name}!`, "#fde047");
+      }
+    }
+
+    function initEcoGrid() {
+      ecoState.grid = [];
+      for (let r = 0; r < GRID_ROWS; r++) {
+        const row = [];
+        for (let c = 0; c < GRID_COLS; c++) {
+          const rand = Math.random();
+          let type = TILE_TYPES.GRASS;
+          const level = 2;
+
+          if (rand < 0.24) {
+            type = TILE_TYPES.FOREST;
+          } else if (rand < 0.32) {
+            type = TILE_TYPES.WETLAND;
+          } else if (rand < 0.56) {
+            type = TILE_TYPES.DESERT;
+          } else if (rand < 0.63) {
+            type = TILE_TYPES.INVASIVE;
+          }
+
+          row.push({
+            r,
+            c,
+            type,
+            level,
+            animOffset: Math.random() * Math.PI * 2,
+            threatProgress: 0,
+            pulse: 0,
+          });
+        }
+        ecoState.grid.push(row);
+      }
+
+      ecoState.wildlife = [];
+      ecoState.grid.flat().forEach((tile) => {
+        if (tile.type === TILE_TYPES.FOREST && Math.random() < 0.4) {
+          spawnWildlifeOnTile(tile, false);
+        }
+      });
+    }
+
+    function addFloatingText(gridX, gridY, text, color = "#ffffff") {
+      ecoState.floatingTexts.push({
+        gridX,
+        gridY,
+        text,
+        color,
+        alpha: 1.0,
+        vy: -0.55,
+      });
+    }
+
+    function spawnParticles(gridX, gridY, color, count = 12) {
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 0.4 + Math.random() * 1.4;
+        ecoState.particles.push({
+          gridX,
+          gridY,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 0.3,
+          size: 2.5 + Math.random() * 3.5,
+          color,
+          life: 0.6 + Math.random() * 0.4,
+          maxLife: 1.0,
+        });
+      }
+    }
+
+    function getNeighbors(r, c) {
+      const dirs = [
+        [-1, 0],
+        [1, 0],
+        [0, -1],
+        [0, 1],
+      ];
+      const neighbors = [];
+      for (const [dr, dc] of dirs) {
+        const nr = r + dr;
+        const nc = c + dc;
+        if (nr >= 0 && nr < GRID_ROWS && nc >= 0 && nc < GRID_COLS) {
+          neighbors.push(ecoState.grid[nr][nc]);
+        }
+      }
+      return neighbors;
+    }
+
+    function handleTileClick(r, c) {
+      if (!ecoState.running || ecoState.paused || ecoState.gameOver) return;
+
+      const tile = ecoState.grid[r][c];
+      const tool = ecoState.selectedTool;
+      const cost = getToolCost(tool);
+
+      if (ecoState.energy < cost) {
+        sfx.playError();
+        addFloatingText(c + 0.5, r + 0.4, "Not enough Eco-Energy!", "#f87171");
+        return;
+      }
+
+      let actionSuccess = false;
+
+      if (tool === "plant") {
+        if (tile.type === TILE_TYPES.GRASS) {
+          tile.type = TILE_TYPES.FOREST;
+          tile.level = 1;
+          tile.pulse = 1;
+          ecoState.score += 15;
+          sfx.playPlant();
+          spawnParticles(c + 0.5, r + 0.5, "#56C02B", 14);
+          addFloatingText(c + 0.5, r + 0.4, "+15 Forest Restored 🌲", "#86efac");
+          actionSuccess = true;
+        } else if (tile.type === TILE_TYPES.FOREST && tile.level < 3) {
+          tile.level++;
+          tile.pulse = 1;
+          ecoState.score += 20;
+          sfx.playPlant();
+          spawnParticles(c + 0.5, r + 0.5, "#a3e635", 14);
+          addFloatingText(c + 0.5, r + 0.4, "+20 Old-Growth Canopy 🌳", "#bef264");
+          if (tile.level === 3 && Math.random() < 0.65) {
+            spawnWildlifeOnTile(tile, true);
+          }
+          actionSuccess = true;
+        } else if (tile.type === TILE_TYPES.DESERT) {
+          sfx.playError();
+          addFloatingText(c + 0.5, r + 0.4, "Soil too dry! Use Wetland 💧 first", "#38bdf8");
+        } else {
+          sfx.playError();
+          addFloatingText(c + 0.5, r + 0.4, "Clear threat or choose Meadow", "#fbbf24");
+        }
+      } else if (tool === "ranger") {
+        if (
+          tile.type === TILE_TYPES.FIRE ||
+          tile.type === TILE_TYPES.LOGGERS ||
+          tile.type === TILE_TYPES.INVASIVE
+        ) {
+          const prevType = tile.type;
+          tile.type = TILE_TYPES.GRASS;
+          tile.threatProgress = 0;
+          tile.pulse = 1;
+          ecoState.score += 25;
+          sfx.playRanger();
+          spawnParticles(c + 0.5, r + 0.5, "#fbbf24", 16);
+
+          const msg =
+            prevType === TILE_TYPES.FIRE
+              ? "Wildfire Extinguished! 🚒"
+              : prevType === TILE_TYPES.LOGGERS
+              ? "Illegal Loggers Halted! 🛡️"
+              : "Invasive Weeds Cleared! 🌿";
+          addFloatingText(c + 0.5, r + 0.4, `+25 ${msg}`, "#fde047");
+          actionSuccess = true;
+        } else {
+          sfx.playError();
+          addFloatingText(c + 0.5, r + 0.4, "No active threat on this tile", "#cbd5e1");
+        }
+      } else if (tool === "water") {
+        if (
+          tile.type === TILE_TYPES.DESERT ||
+          tile.type === TILE_TYPES.GRASS ||
+          tile.type === TILE_TYPES.FIRE
+        ) {
+          tile.type = TILE_TYPES.WETLAND;
+          tile.threatProgress = 0;
+          tile.pulse = 1;
+          ecoState.score += 25;
+          sfx.playWater();
+          spawnParticles(c + 0.5, r + 0.5, "#38bdf8", 16);
+          addFloatingText(c + 0.5, r + 0.4, "+25 Wetland Restored 💧", "#7dd3fc");
+
+          const neighbors = getNeighbors(r, c);
+          neighbors.forEach((n) => {
+            if (n.type === TILE_TYPES.DESERT) {
+              n.type = TILE_TYPES.GRASS;
+              n.pulse = 0.8;
+              spawnParticles(n.c + 0.5, n.r + 0.5, "#4ade80", 8);
+            }
+          });
+          actionSuccess = true;
+        } else {
+          sfx.playError();
+          addFloatingText(c + 0.5, r + 0.4, "Target desert, fire, or meadow", "#7dd3fc");
+        }
+      } else if (tool === "corridor") {
+        if (tile.type === TILE_TYPES.GRASS || tile.type === TILE_TYPES.FOREST) {
+          const neighbors = getNeighbors(r, c);
+          const hasAdjacentForest = neighbors.some(
+            (n) =>
+              n.type === TILE_TYPES.FOREST ||
+              n.type === TILE_TYPES.CORRIDOR ||
+              n.type === TILE_TYPES.WETLAND
+          );
+
+          if (!hasAdjacentForest) {
+            sfx.playError();
+            addFloatingText(c + 0.5, r + 0.4, "Must border a Forest or Wetland!", "#bef264");
+            return;
+          }
+
+          tile.type = TILE_TYPES.CORRIDOR;
+          tile.pulse = 1;
+          ecoState.score += 35;
+          spawnWildlifeOnTile(tile, true);
+          spawnParticles(c + 0.5, r + 0.5, "#a3e635", 18);
+          actionSuccess = true;
+        } else {
+          sfx.playError();
+          addFloatingText(c + 0.5, r + 0.4, "Build on healthy meadow or forest", "#bef264");
+        }
+      }
+
+      if (actionSuccess) {
+        ecoState.energy -= cost;
+        updateEcoHUD();
+      }
+    }
+
+    function spawnThreat() {
+      const yearFactor = (ecoState.year - SITE_CONFIG.game.startYear) * 0.15;
+      const candidates = ecoState.grid
+        .flat()
+        .filter((t) => t.type === TILE_TYPES.FOREST || t.type === TILE_TYPES.GRASS);
+
+      if (candidates.length === 0) return;
+
+      const target = candidates[Math.floor(Math.random() * candidates.length)];
+      const neighbors = getNeighbors(target.r, target.c);
+      const nearWetland = neighbors.some((n) => n.type === TILE_TYPES.WETLAND);
+
+      const roll = Math.random();
+
+      if (target.type === TILE_TYPES.FOREST) {
+        if (!nearWetland && roll < 0.48) {
+          target.type = TILE_TYPES.FIRE;
+          target.threatProgress = 0;
+          sfx.playAlert();
+          addFloatingText(target.c + 0.5, target.r + 0.4, "🔥 Wildfire Outbreak!", "#fb923c");
+        } else {
+          target.type = TILE_TYPES.LOGGERS;
+          target.threatProgress = 0;
+          sfx.playAlert();
+          addFloatingText(target.c + 0.5, target.r + 0.4, "🪓 Illegal Logging!", "#f87171");
+        }
+      } else if (target.type === TILE_TYPES.GRASS) {
+        if (!nearWetland && roll < 0.55 + yearFactor * 0.1) {
+          target.type = TILE_TYPES.DESERT;
+          addFloatingText(target.c + 0.5, target.r + 0.4, "🏜️ Soil Erosion!", "#fdba74");
+        } else {
+          target.type = TILE_TYPES.INVASIVE;
+          addFloatingText(target.c + 0.5, target.r + 0.4, "🌿 Invasive Species!", "#c084fc");
+        }
+      }
+    }
+
+    function updateEcoSimulation(dt) {
+      if (!ecoState.running || ecoState.paused || ecoState.gameOver) return;
+
+      let healthyPoints = 0;
+      let degradedPoints = 0;
+      const totalTiles = GRID_ROWS * GRID_COLS;
+
+      let forestCount = 0;
+      let wetlandCount = 0;
+      let corridorCount = 0;
+
+      for (let r = 0; r < GRID_ROWS; r++) {
+        for (let c = 0; c < GRID_COLS; c++) {
+          const tile = ecoState.grid[r][c];
+          tile.animOffset += dt * 2.5;
+          if (tile.pulse > 0) tile.pulse = Math.max(0, tile.pulse - dt * 2.2);
+
+          switch (tile.type) {
+            case TILE_TYPES.FOREST:
+              forestCount++;
+              healthyPoints += 1.0 + (tile.level - 1) * 0.25;
+              break;
+            case TILE_TYPES.WETLAND:
+              wetlandCount++;
+              healthyPoints += 1.1;
+              break;
+            case TILE_TYPES.CORRIDOR:
+              corridorCount++;
+              healthyPoints += 1.25;
+              break;
+            case TILE_TYPES.GRASS:
+              healthyPoints += 0.45;
+              break;
+            case TILE_TYPES.DESERT:
+              degradedPoints += 1.0;
+              break;
+            case TILE_TYPES.INVASIVE:
+              degradedPoints += 0.85;
+              break;
+            case TILE_TYPES.FIRE:
+            case TILE_TYPES.LOGGERS:
+              degradedPoints += 1.3;
+              tile.threatProgress += dt;
+
+              if (tile.threatProgress >= 6.5) {
+                const wasFire = tile.type === TILE_TYPES.FIRE;
+                tile.type = TILE_TYPES.DESERT;
+                tile.threatProgress = 0;
+                spawnParticles(c + 0.5, r + 0.5, "#78716c", 12);
+
+                if (wasFire) {
+                  const neighbors = getNeighbors(r, c);
+                  const flammable = neighbors.filter(
+                    (n) =>
+                      n.type === TILE_TYPES.FOREST &&
+                      !getNeighbors(n.r, n.c).some((wn) => wn.type === TILE_TYPES.WETLAND)
+                  );
+                  if (flammable.length > 0) {
+                    const spreadTarget = flammable[Math.floor(Math.random() * flammable.length)];
+                    spreadTarget.type = TILE_TYPES.FIRE;
+                    spreadTarget.threatProgress = 0;
+                  }
+                }
+              }
+              break;
+          }
+        }
+      }
+
+      ecoState.regenRate = Number(
+        (2.2 + forestCount * 0.35 + wetlandCount * 0.4 + corridorCount * 0.3).toFixed(1)
+      );
+      ecoState.energy = Math.min(ecoState.maxEnergy, ecoState.energy + ecoState.regenRate * dt);
+      ecoState.score += (corridorCount * 0.8 + ecoState.wildlife.length * 0.4) * dt;
+
+      const healthPct = Math.min(100, Math.max(0, Math.round((healthyPoints / totalTiles) * 100)));
+      const degradePct = Math.min(100, Math.max(0, Math.round((degradedPoints / totalTiles) * 100)));
+
+      const secPerYear = Math.max(4, SITE_CONFIG.game.secondsPerYear || 11);
+      ecoState.yearProgress += dt / secPerYear;
+      if (ecoState.yearProgress >= 1) {
+        ecoState.yearProgress = 0;
+        ecoState.year++;
+        if (ecoState.year > SITE_CONFIG.game.targetYear) {
+          endEcoGame(true, healthPct);
+          return;
+        } else {
+          sfx.playWildlife();
+          addFloatingText(GRID_COLS / 2, GRID_ROWS / 2, `📅 Year ${ecoState.year} Reached!`, "#38bdf8");
+        }
+      }
+
+      if (healthPct >= 95 && degradePct === 0) {
+        endEcoGame(true, healthPct);
+        return;
+      }
+
+      if (degradePct >= 85) {
+        endEcoGame(false, healthPct);
+        return;
+      }
+
+      const spawnInterval = Math.max(
+        2.6,
+        5.2 - (ecoState.year - SITE_CONFIG.game.startYear) * 0.45
+      );
+      ecoState.threatTimer += dt;
+      if (ecoState.threatTimer >= spawnInterval) {
+        ecoState.threatTimer = 0;
+        spawnThreat();
+      }
+
+      ecoState.wildlife.forEach((animal) => {
+        animal.hopPhase += dt * 6;
+        animal.moveTimer -= dt;
+        if (animal.moveTimer <= 0) {
+          animal.moveTimer = 2 + Math.random() * 3;
+          const safeTiles = ecoState.grid
+            .flat()
+            .filter(
+              (t) =>
+                t.type === TILE_TYPES.FOREST ||
+                t.type === TILE_TYPES.CORRIDOR ||
+                t.type === TILE_TYPES.WETLAND ||
+                t.type === TILE_TYPES.GRASS
+            );
+          if (safeTiles.length > 0) {
+            const dest = safeTiles[Math.floor(Math.random() * safeTiles.length)];
+            animal.targetC = dest.c + 0.25 + Math.random() * 0.5;
+            animal.targetR = dest.r + 0.25 + Math.random() * 0.5;
+          }
+        }
+        animal.c += (animal.targetC - animal.c) * dt * 1.1;
+        animal.r += (animal.targetR - animal.r) * dt * 1.1;
+      });
+
+      ecoState.particles.forEach((p) => {
+        p.gridX += p.vx * dt;
+        p.gridY += p.vy * dt;
+        p.life -= dt;
+      });
+      ecoState.particles = ecoState.particles.filter((p) => p.life > 0);
+
+      ecoState.floatingTexts.forEach((ft) => {
+        ft.gridY += ft.vy * dt;
+        ft.alpha -= dt * 0.75;
+      });
+      ecoState.floatingTexts = ecoState.floatingTexts.filter((ft) => ft.alpha > 0);
+
+      const facts = SITE_CONFIG.game.facts || [];
+      if (facts.length > 0) {
+        ecoState.factTimer += dt;
+        if (ecoState.factTimer >= 9) {
+          ecoState.factTimer = 0;
+          ecoState.factIndex = (ecoState.factIndex + 1) % facts.length;
+          const banner = document.getElementById("fact-banner");
+          banner.style.opacity = "0";
+          setTimeout(() => {
+            const currentFact = facts[ecoState.factIndex];
+            const splitIdx = currentFact.indexOf(":");
+            if (splitIdx > -1) {
+              banner.innerHTML = `🌍 <strong class="text-[#56C02B]">${currentFact.slice(0, splitIdx)}:</strong>${currentFact.slice(splitIdx + 1)}`;
+            } else {
+              banner.textContent = `🌍 ${currentFact}`;
+            }
+            banner.style.opacity = "1";
+          }, 300);
+        }
+      }
+
+      updateEcoHUD(healthPct, degradePct);
+    }
+
+    function resizeGameCanvas() {
+      const wrapper = document.getElementById("canvas-wrapper");
+      if (!wrapper) return;
+      const rect = wrapper.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+      const dpr = window.devicePixelRatio || 1;
+      gameCanvas.width = rect.width * dpr;
+      gameCanvas.height = rect.height * dpr;
+      gameCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function drawRoundedRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function drawThreatTimerBar(ctx, x, y, w, h, progress, color) {
+      const barW = w * 0.72;
+      const barH = 4;
+      const bx = x + (w - barW) / 2;
+      const by = y + h - 8;
+      ctx.fillStyle = "rgba(0,0,0,0.6)";
+      ctx.fillRect(bx, by, barW, barH);
+      ctx.fillStyle = color;
+      ctx.fillRect(bx, by, barW * Math.min(1, progress), barH);
+    }
+
+    function renderEcoGame() {
+      const wrapper = document.getElementById("canvas-wrapper");
+      if (!wrapper) return;
+      const width = wrapper.clientWidth;
+      const height = wrapper.clientHeight;
+      if (width <= 0 || height <= 0) return;
+
+      gameCtx.clearRect(0, 0, width, height);
+
+      const bgGrad = gameCtx.createLinearGradient(0, 0, 0, height);
+      bgGrad.addColorStop(0, "#183325");
+      bgGrad.addColorStop(1, "#102419");
+      gameCtx.fillStyle = bgGrad;
+      gameCtx.fillRect(0, 0, width, height);
+
+      const padX = width * 0.03;
+      const topOffset = Math.max(42, height * 0.12);
+      const padBottom = height * 0.03;
+      const boardW = width - padX * 2;
+      const boardH = height - topOffset - padBottom;
+
+      const cellW = boardW / GRID_COLS;
+      const cellH = boardH / GRID_ROWS;
+      const gap = Math.min(cellW, cellH) * 0.07;
+
+      for (let r = 0; r < GRID_ROWS; r++) {
+        for (let c = 0; c < GRID_COLS; c++) {
+          const tile = ecoState.grid[r][c];
+          const x = padX + c * cellW + gap / 2;
+          const y = topOffset + r * cellH + gap / 2;
+          const w = cellW - gap;
+          const h = cellH - gap;
+          const radius = Math.min(w, h) * 0.18;
+
+          let fill = "#2e6138";
+          let border = "rgba(255,255,255,0.08)";
+
+          switch (tile.type) {
+            case TILE_TYPES.GRASS:
+              fill = "#377341";
+              break;
+            case TILE_TYPES.FOREST:
+              fill = tile.level === 3 ? "#1e522b" : "#276335";
+              border = "rgba(86, 192, 43, 0.35)";
+              break;
+            case TILE_TYPES.WETLAND:
+              fill = "#185978";
+              border = "rgba(56, 189, 248, 0.45)";
+              break;
+            case TILE_TYPES.CORRIDOR:
+              fill = "#386e2c";
+              border = "rgba(163, 230, 53, 0.55)";
+              break;
+            case TILE_TYPES.DESERT:
+              fill = "#8c6239";
+              border = "rgba(217, 119, 6, 0.35)";
+              break;
+            case TILE_TYPES.FIRE:
+              fill = "#7c2d12";
+              border = "#f97316";
+              break;
+            case TILE_TYPES.LOGGERS:
+              fill = "#5c2b29";
+              border = "#ef4444";
+              break;
+            case TILE_TYPES.INVASIVE:
+              fill = "#4a3559";
+              border = "#a855f7";
+              break;
+          }
+
+          gameCtx.save();
+          if (tile.pulse > 0) {
+            const scale = 1 + Math.sin(tile.pulse * Math.PI) * 0.08;
+            gameCtx.translate(x + w / 2, y + h / 2);
+            gameCtx.scale(scale, scale);
+            gameCtx.translate(-(x + w / 2), -(y + h / 2));
+          }
+
+          drawRoundedRect(gameCtx, x, y + 3, w, h, radius);
+          gameCtx.fillStyle = "rgba(0,0,0,0.32)";
+          gameCtx.fill();
+
+          drawRoundedRect(gameCtx, x, y, w, h, radius);
+          gameCtx.fillStyle = fill;
+          gameCtx.fill();
+          gameCtx.lineWidth = 2;
+          gameCtx.strokeStyle = border;
+          gameCtx.stroke();
+
+          const cx = x + w / 2;
+          const cy = y + h / 2;
+          const iconSize = Math.min(w, h) * 0.52;
+          gameCtx.textAlign = "center";
+          gameCtx.textBaseline = "middle";
+
+          if (tile.type === TILE_TYPES.GRASS) {
+            gameCtx.fillStyle = "rgba(134, 239, 172, 0.28)";
+            gameCtx.font = `${iconSize * 0.55}px sans-serif`;
+            gameCtx.fillText("🌱", cx, cy + 2);
+          } else if (tile.type === TILE_TYPES.FOREST) {
+            const sway = Math.sin(tile.animOffset) * 2;
+            gameCtx.font = `${iconSize * (0.9 + tile.level * 0.1)}px sans-serif`;
+            const treeEmoji = tile.level === 3 ? "🌳" : "🌲";
+            gameCtx.fillText(treeEmoji, cx + sway, cy);
+            if (tile.level >= 2) {
+              gameCtx.font = `${iconSize * 0.58}px sans-serif`;
+              gameCtx.fillText("🌲", cx - w * 0.22, cy + h * 0.14);
+            }
+          } else if (tile.type === TILE_TYPES.WETLAND) {
+            const ripple = Math.sin(tile.animOffset * 1.4) * 3;
+            gameCtx.strokeStyle = "rgba(125, 211, 252, 0.45)";
+            gameCtx.lineWidth = 1.5;
+            gameCtx.beginPath();
+            gameCtx.ellipse(cx, cy + 4, w * 0.28 + ripple, h * 0.16, 0, 0, Math.PI * 2);
+            gameCtx.stroke();
+
+            gameCtx.font = `${iconSize * 0.85}px sans-serif`;
+            gameCtx.fillText("💧", cx, cy - 2);
+          } else if (tile.type === TILE_TYPES.CORRIDOR) {
+            gameCtx.strokeStyle = "rgba(190, 242, 100, 0.65)";
+            gameCtx.setLineDash([4, 4]);
+            gameCtx.lineWidth = 2;
+            gameCtx.strokeRect(x + 6, y + 6, w - 12, h - 12);
+            gameCtx.setLineDash([]);
+
+            gameCtx.font = `${iconSize * 0.82}px sans-serif`;
+            gameCtx.fillText("🐾", cx, cy);
+          } else if (tile.type === TILE_TYPES.DESERT) {
+            gameCtx.font = `${iconSize * 0.78}px sans-serif`;
+            gameCtx.fillText("🏜️", cx, cy);
+          } else if (tile.type === TILE_TYPES.FIRE) {
+            const flicker = 1 + Math.sin(tile.animOffset * 4) * 0.12;
+            gameCtx.font = `${iconSize * 0.95 * flicker}px sans-serif`;
+            gameCtx.fillText("🔥", cx, cy - 2);
+            drawThreatTimerBar(gameCtx, x, y, w, h, tile.threatProgress / 6.5, "#f97316");
+          } else if (tile.type === TILE_TYPES.LOGGERS) {
+            gameCtx.font = `${iconSize * 0.88}px sans-serif`;
+            gameCtx.fillText("🪓", cx, cy - 2);
+            drawThreatTimerBar(gameCtx, x, y, w, h, tile.threatProgress / 6.5, "#ef4444");
+          } else if (tile.type === TILE_TYPES.INVASIVE) {
+            gameCtx.font = `${iconSize * 0.82}px sans-serif`;
+            gameCtx.fillText("🥀", cx, cy);
+          }
+
+          if (
+            ecoState.hoverTile &&
+            ecoState.hoverTile.r === r &&
+            ecoState.hoverTile.c === c &&
+            ecoState.running
+          ) {
+            drawRoundedRect(gameCtx, x, y, w, h, radius);
+            gameCtx.strokeStyle = "#ffffff";
+            gameCtx.lineWidth = 2.5;
+            gameCtx.stroke();
+          }
+
+          gameCtx.restore();
+        }
+      }
+
+      ecoState.wildlife.forEach((animal) => {
+        const wx = padX + animal.c * cellW;
+        const wy = topOffset + animal.r * cellH - Math.abs(Math.sin(animal.hopPhase)) * 4;
+        const size = Math.min(cellW, cellH) * 0.42;
+
+        gameCtx.font = `${size}px sans-serif`;
+        gameCtx.textAlign = "center";
+        gameCtx.textBaseline = "middle";
+        gameCtx.fillText(animal.emoji, wx, wy);
+      });
+
+      ecoState.particles.forEach((p) => {
+        const px = padX + p.gridX * cellW;
+        const py = topOffset + p.gridY * cellH;
+        gameCtx.globalAlpha = Math.max(0, p.life);
+        gameCtx.fillStyle = p.color;
+        gameCtx.beginPath();
+        gameCtx.arc(px, py, p.size, 0, Math.PI * 2);
+        gameCtx.fill();
+        gameCtx.globalAlpha = 1.0;
+      });
+
+      ecoState.floatingTexts.forEach((ft) => {
+        const fx = padX + ft.gridX * cellW;
+        const fy = topOffset + ft.gridY * cellH;
+        gameCtx.save();
+        gameCtx.globalAlpha = Math.max(0, ft.alpha);
+        gameCtx.font = `bold ${Math.max(12, cellW * 0.16)}px Inter, sans-serif`;
+        gameCtx.textAlign = "center";
+        gameCtx.fillStyle = "#091710";
+        gameCtx.fillText(ft.text, fx + 1, fy + 1);
+        gameCtx.fillStyle = ft.color;
+        gameCtx.fillText(ft.text, fx, fy);
+        gameCtx.restore();
+      });
+    }
+
+    function updateEcoHUD(healthPct = null, degradePct = null) {
+      document.getElementById("stat-energy").textContent = Math.floor(ecoState.energy);
+      document.getElementById("stat-regen").textContent = `(+${ecoState.regenRate}/s)`;
+      document.getElementById("stat-score").textContent = Math.floor(ecoState.score);
+      document.getElementById("stat-year").textContent = ecoState.year;
+
+      if (healthPct !== null && degradePct !== null) {
+        document.getElementById("health-pct").textContent = `${healthPct}%`;
+        document.getElementById("degrade-pct").textContent = `${degradePct}%`;
+        document.getElementById("health-bar").style.width = `${healthPct}%`;
+      }
+
+      document.querySelectorAll("#toolbar .tool-card").forEach((card) => {
+        const cost = Number(card.dataset.cost);
+        if (ecoState.energy < cost) {
+          card.classList.add("disabled");
+        } else {
+          card.classList.remove("disabled");
+        }
+      });
+    }
+
+    function selectEcoTool(toolKey) {
+      ecoState.selectedTool = toolKey;
+      document.querySelectorAll("#toolbar .tool-card").forEach((card) => {
+        if (card.dataset.tool === toolKey) {
+          card.classList.add("active");
+        } else {
+          card.classList.remove("active");
+        }
+      });
+    }
+
+    function startEcoGame() {
+      sfx.init();
+      ecoState.running = true;
+      ecoState.paused = false;
+      ecoState.gameOver = false;
+      ecoState.energy = SITE_CONFIG.game.initialEnergy;
+      ecoState.maxEnergy = SITE_CONFIG.game.maxEnergy;
+      ecoState.score = 0;
+      ecoState.year = SITE_CONFIG.game.startYear;
+      ecoState.yearProgress = 0;
+      ecoState.threatTimer = 1.5;
+      ecoState.wildlifeSavedCount = 0;
+      ecoState.particles = [];
+      ecoState.floatingTexts = [];
+
+      initEcoGrid();
+      selectEcoTool("plant");
+      updateEcoHUD(52, 24);
+
+      document.getElementById("screen-start").classList.add("hidden");
+      document.getElementById("screen-end").classList.add("hidden");
+      resizeGameCanvas();
+      sfx.playPlant();
+    }
+
+    function endEcoGame(victory, healthPct) {
+      ecoState.running = false;
+      ecoState.gameOver = true;
+
+      const endScreen = document.getElementById("screen-end");
+      const endIcon = document.getElementById("end-icon");
+      const endTitle = document.getElementById("end-title");
+      const endSubtitle = document.getElementById("end-subtitle");
+
+      if (victory) {
+        endIcon.textContent = "🌍🏆";
+        endTitle.textContent = "SDG 15 Target Achieved!";
+        endTitle.className = "text-xl sm:text-3xl font-extrabold text-[#56C02B] mb-2";
+        endSubtitle.textContent =
+          "Outstanding stewardship! You restored native forests, protected endangered wildlife, and secured a thriving terrestrial ecosystem for 2030.";
+        sfx.playWildlife();
+      } else {
+        endIcon.textContent = "🏜️⚠️";
+        endTitle.textContent = "Ecosystem Collapse";
+        endTitle.className = "text-xl sm:text-3xl font-extrabold text-orange-400 mb-2";
+        endSubtitle.textContent =
+          "Unchecked wildfires, logging, and desertification degraded the land. Try deploying Eco-Rangers and Wetlands earlier!";
+        sfx.playAlert();
+      }
+
+      document.getElementById("end-score").textContent = Math.floor(ecoState.score);
+      document.getElementById("end-health").textContent = `${healthPct}%`;
+      document.getElementById("end-wildlife").textContent = ecoState.wildlifeSavedCount;
+
+      endScreen.classList.remove("hidden");
+    }
+
+    function getEcoGridCoordsFromEvent(e) {
+      const rect = gameCanvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+
+      const padX = rect.width * 0.03;
+      const topOffset = Math.max(42, rect.height * 0.12);
+      const padBottom = rect.height * 0.03;
+      const boardW = rect.width - padX * 2;
+      const boardH = rect.height - topOffset - padBottom;
+
+      const col = Math.floor((x - padX) / (boardW / GRID_COLS));
+      const row = Math.floor((y - topOffset) / (boardH / GRID_ROWS));
+
+      if (row >= 0 && row < GRID_ROWS && col >= 0 && col < GRID_COLS) {
+        return { r: row, c: col };
+      }
+      return null;
+    }
+
+    function attachEcoListeners() {
+      gameCanvas.addEventListener("mousemove", (e) => {
+        ecoState.hoverTile = getEcoGridCoordsFromEvent(e);
+      });
+
+      gameCanvas.addEventListener("mouseleave", () => {
+        ecoState.hoverTile = null;
+      });
+
+      gameCanvas.addEventListener("click", (e) => {
+        const coords = getEcoGridCoordsFromEvent(e);
+        if (coords) handleTileClick(coords.r, coords.c);
+      });
+
+      gameCanvas.addEventListener(
+        "touchstart",
+        (e) => {
+          const coords = getEcoGridCoordsFromEvent(e);
+          if (coords) {
+            ecoState.hoverTile = coords;
+            handleTileClick(coords.r, coords.c);
+          }
+        },
+        { passive: true }
+      );
+
+      document.querySelectorAll("#toolbar .tool-card").forEach((card) => {
+        card.addEventListener("click", () => {
+          selectEcoTool(card.dataset.tool);
+        });
+      });
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "1") selectEcoTool("plant");
+        if (e.key === "2") selectEcoTool("ranger");
+        if (e.key === "3") selectEcoTool("water");
+        if (e.key === "4") selectEcoTool("corridor");
+      });
+
+      document.getElementById("btn-start-game").addEventListener("click", startEcoGame);
+      document.getElementById("game-reset-btn").addEventListener("click", startEcoGame);
+      document.getElementById("btn-restart").addEventListener("click", startEcoGame);
+
+      const guideModal = document.getElementById("screen-guide");
+      document.getElementById("btn-guide").addEventListener("click", () => {
+        ecoState.paused = true;
+        guideModal.classList.remove("hidden");
+      });
+      document.getElementById("btn-open-guide-start").addEventListener("click", () => {
+        guideModal.classList.remove("hidden");
+      });
+      const closeGuide = () => {
+        guideModal.classList.add("hidden");
+        ecoState.paused = false;
+      };
+      document.getElementById("btn-close-guide").addEventListener("click", closeGuide);
+      document.getElementById("btn-close-guide-bottom").addEventListener("click", closeGuide);
+
+      document.getElementById("btn-mute").addEventListener("click", (e) => {
+        sfx.muted = !sfx.muted;
+        e.currentTarget.textContent = sfx.muted ? "🔇" : "🔊";
+      });
+    }
+
+    function ecoGameLoop(timestamp) {
+      if (!ecoState.lastTime) ecoState.lastTime = timestamp;
+      const dt = Math.min(0.1, (timestamp - ecoState.lastTime) / 1000);
+      ecoState.lastTime = timestamp;
+
+      updateEcoSimulation(dt);
+      renderEcoGame();
+
+      requestAnimationFrame(ecoGameLoop);
+    }
+
+    window.addEventListener("resize", resizeGameCanvas);
+
+    window.onload = function () {
+      renderStaticContent();
+      initEcoGrid();
+      attachEcoListeners();
+      resizeGameCanvas();
+      requestAnimationFrame(ecoGameLoop);
+    };
+  </script>
+</body>
+</html>
